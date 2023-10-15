@@ -4,12 +4,12 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { css } from "../styled-system/css";
 
 function App() {
-	const [inputPaths, setInputPaths] = useState<Set<string>>(new Set());
+	const [images, setImages] = useState<Set<{inputPath: string}>>(new Set());
 
 	useEffect(() => {
 		const unlisten = listen<string[]>('tauri://file-drop', (event) => {
 			for (const inputPath of event.payload) {
-				setInputPaths((prev) => new Set([...prev, inputPath]));
+				setImages((prev) => new Set([...prev, {inputPath}]));
 				invoke('convert_webp', { inputPath }).then((message) => console.log(message))
 			}
 		})
@@ -54,9 +54,9 @@ function App() {
 			<div>
 				<h2>files:</h2>
 				<ul>
-					{Array.from(inputPaths).map((cur) => (
-						<li key={cur}>
-							<div>{cur}</div>
+					{Array.from(images).map((image) => (
+						<li key={image.inputPath}>
+							<div>{image.inputPath}</div>
 						</li>
 					))}
 				</ul>
