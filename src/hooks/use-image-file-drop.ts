@@ -8,6 +8,8 @@ export type Image = {
 		isProgress: boolean;
 		message: string;
 		fileName: string;
+		inputSize?: number;
+		outputSize?: number;
 	};
 };
 
@@ -35,15 +37,23 @@ export const useImageFileDrop = () => {
 				}));
 
 				invoke("convert_webp", { inputPath }).then((message) => {
-					setImages((prev) => ({
-						...prev,
-						[inputPath]: {
-							inputPath,
-							fileName,
-							isProgress: false,
-							message: message as string,
-						},
-					}));
+					invoke("get_image_info", { inputPath }).then((info) => {
+						const { input_size, output_size } = info as {
+							input_size: number;
+							output_size: number;
+						};
+						setImages((prev) => ({
+							...prev,
+							[inputPath]: {
+								inputPath,
+								fileName,
+								isProgress: false,
+								message: message as string,
+								inputSize: input_size,
+								outputSize: output_size,
+							},
+						}));
+					});
 				});
 			}
 		});

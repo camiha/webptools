@@ -5,7 +5,7 @@
 
 #[tauri::command]
 async fn convert_webp(input_path: String) -> String {
-    let output_path = input_path.replace(".png", ".webp");
+    let output_path = input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp");
 
     if let Ok(img) = image::open(input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
@@ -22,6 +22,28 @@ async fn convert_webp(input_path: String) -> String {
     }
 }
 
+#[derive(Debug, serde::Serialize)]
+struct ImageInfo {
+    input_size: u64,
+    output_size: u64,
+}
+
+#[tauri::command]
+fn get_image_info(input_path: String) -> ImageInfo {
+    let input_size = fs::metadata(input_path.clone())
+        .expect("Failed to get input file metadata")
+        .len();
+    println!("Input size: {}", input_size);
+    let output_size: u64 = fs::metadata(input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp"))
+        .expect("Failed to get output file metadata")
+        .len();
+    println!("Output size: {}", output_size);
+    return ImageInfo {
+        input_size,
+        output_size,
+    }
+}
+
 use image;
 use std::fs;
 use webp;
@@ -29,7 +51,7 @@ use webp::Encoder;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![convert_webp])
+        .invoke_handler(tauri::generate_handler![convert_webp, get_image_info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
