@@ -67,7 +67,9 @@ function App() {
 										</Flex>
 										<Text>{image.fileName}</Text>
 									</Flex>
-									<Text>{image.reductionRate}%</Text>
+									<Text>
+										{image.reductionRate === 0 ? "-" : image.reductionRate}%
+									</Text>
 								</Flex>
 							</ListItem>
 						))}
