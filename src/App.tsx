@@ -1,17 +1,22 @@
-import { useState } from "react";
-import { listen, emit } from '@tauri-apps/api/event'
+import { useEffect, useState } from "react";
+import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri'
 import { css } from "../styled-system/css";
 
 function App() {
 	const [inputPaths, setInputPaths] = useState<Set<string>>(new Set());
 
-	listen<string[]>('tauri://file-drop', (event) => {
-		setInputPaths((prev) => new Set([...prev, ...event.payload]));
-		event.payload.forEach((imagePath) => {
-			invoke('convert_webp', { inputPath: imagePath }).then((message) => console.log(message))
+	useEffect(() => {
+		const unlisten = listen<string[]>('tauri://file-drop', (event) => {
+			for (const inputPath of event.payload) {
+				setInputPaths((prev) => new Set([...prev, inputPath]));
+				invoke('convert_webp', { inputPath }).then((message) => console.log(message))
+			}
 		})
-	})
+		return () => {
+			unlisten.then(fn => fn());
+		}
+	}, []);
 
 	return (
 		<div
