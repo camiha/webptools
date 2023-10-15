@@ -40,9 +40,10 @@ function App() {
 				</Flex>
 				<Divider />
 				<Flex flexDirection={"column"} gap={2}>
-					<Heading as="h2" size="sm">
-						drop image here! (support png, jpg only)
-					</Heading>
+					<Flex justifyContent={"space-between"}>
+						<Text>filename</Text>
+						<Text>reduced rate</Text>
+					</Flex>
 					<List display="flex" flexDirection="column" gap={1}>
 						{Object.entries(images).map(([key, image]) => (
 							<ListItem
@@ -51,29 +52,37 @@ function App() {
 								gap={2}
 								flexDirection={"column"}
 							>
-								<Flex gap={2}>
-									<Flex
-										flexDirection={"column"}
-										justifyContent={"center"}
-										alignItems={"center"}
-									>
-										{image.isProgress ? (
-											<Spinner size="sm" />
-										) : (
-											<CheckIcon color={"green.500"} />
-										)}
+								<Flex gap={2} justifyContent={"space-between"}>
+									<Flex gap={2}>
+										<Flex
+											flexDirection={"column"}
+											justifyContent={"center"}
+											alignItems={"center"}
+										>
+											{image.isProgress ? (
+												<Spinner size="sm" />
+											) : (
+												<CheckIcon color={"green.500"} />
+											)}
+										</Flex>
+										<Text>{image.fileName}</Text>
 									</Flex>
-									<Text>{image.fileName}</Text>
+									<Text>{image.reductionRate}%</Text>
 								</Flex>
 							</ListItem>
 						))}
 					</List>
 				</Flex>
 			</Flex>
-			<Flex gap={4} width={"full"}>
-				<Button width={"full"} onClick={clearImages}>
-					clear inputs
-				</Button>
+			<Flex flexDirection={"column"} gap={2}>
+				<Text textAlign={"center"}>
+					drop image here. (support png, jpg only)
+				</Text>
+				<Flex gap={4} width={"full"}>
+					<Button width={"full"} onClick={clearImages}>
+						clear inputs
+					</Button>
+				</Flex>
 			</Flex>
 		</Flex>
 	);

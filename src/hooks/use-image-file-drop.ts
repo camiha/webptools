@@ -10,6 +10,7 @@ export type Image = {
 		fileName: string;
 		inputSize?: number;
 		outputSize?: number;
+		reductionRate?: number;
 	};
 };
 
@@ -51,6 +52,9 @@ export const useImageFileDrop = () => {
 								message: message as string,
 								inputSize: input_size,
 								outputSize: output_size,
+								reductionRate: Math.round(
+									(100 * (input_size - output_size)) / input_size,
+								),
 							},
 						}));
 					});
