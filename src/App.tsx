@@ -10,7 +10,7 @@ import {
 	Button,
 	useColorMode,
 } from "@chakra-ui/react";
-import { CheckIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { CheckIcon, MoonIcon, SunIcon, CloseIcon } from "@chakra-ui/icons";
 
 function App() {
 	const { images, clearImages } = useImageFileDrop();
@@ -61,8 +61,12 @@ function App() {
 										>
 											{image.isProgress ? (
 												<Spinner size="xs" />
-											) : (
+											) : image.message ===
+											  "Image successfully encoded and saved as WebP." ? (
+												// todo: refactor message
 												<CheckIcon fontSize={"xs"} color={"green.500"} />
+											) : (
+												<CloseIcon fontSize={"xs"} color={"red.500"} />
 											)}
 										</Flex>
 										<Text fontSize={"xs"}>{image.fileName}</Text>
