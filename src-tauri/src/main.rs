@@ -3,9 +3,14 @@
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
+use image;
+use std::fs;
+use webp;
+use webp::Encoder;
+
 #[tauri::command]
 async fn convert_webp(input_path: String) -> String {
-    let output_path = input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp").replace(".PNG", ".webp").replace(".JPG", ".webp").replace(".JPEG", ".webp");
+    let output_path = replace_image_extension(input_path.clone());
 
     if let Ok(img) = image::open(input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
@@ -34,20 +39,28 @@ fn get_image_info(input_path: String) -> ImageInfo {
         .expect("Failed to get input file metadata")
         .len();
     println!("Input size: {}", input_size);
-    let output_size: u64 = fs::metadata(input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp").replace(".PNG", ".webp").replace(".JPG", ".webp").replace(".JPEG", ".webp"))
-        .expect("Failed to get output file metadata")
-        .len();
-    println!("Output size: {}", output_size);
-    return ImageInfo {
-        input_size,
-        output_size,
+
+    if let Ok(output_metadata) = fs::metadata(replace_image_extension(input_path)) {
+        let output_size = output_metadata.len();
+
+        println!("Output size: {}", output_size);
+        return ImageInfo {
+            input_size,
+            output_size,
+        }
+    } else {
+        return {
+            ImageInfo {
+                input_size: 0,
+                output_size: 0,
+            }
+        }
     }
 }
 
-use image;
-use std::fs;
-use webp;
-use webp::Encoder;
+fn replace_image_extension(input_path: String) -> String {
+    return input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp").replace(".PNG", ".webp").replace(".JPG", ".webp").replace(".JPEG", ".webp");
+}
 
 fn main() {
     tauri::Builder::default()
