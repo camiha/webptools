@@ -4,7 +4,7 @@
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 #[tauri::command]
-fn convert_webp(input_path: String) -> String {
+async fn convert_webp(input_path: String) -> String {
     let output_path = input_path.replace(".png", ".webp");
 
     if let Ok(img) = image::open(input_path) {
