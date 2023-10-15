@@ -1,66 +1,81 @@
-import { useEffect, useState } from "react";
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
-
-type Image = {
-	[key: string]: { inputPath: string; isProgress: boolean; message: string };
-};
+import { useImageFileDrop } from "./hooks/use-image-file-drop";
+import {
+	Divider,
+	Flex,
+	Heading,
+	Text,
+	List,
+	ListItem,
+	Spinner,
+	Button,
+	useColorMode,
+} from "@chakra-ui/react";
+import { CheckIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 function App() {
-	const [images, setImages] = useState<Image>({});
-
-	useEffect(() => {
-		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
-			for (const inputPath of event.payload) {
-				if (images[inputPath]) continue;
-
-				setImages((prev) => ({
-					...prev,
-					[inputPath]: {
-						inputPath,
-						isProgress: true,
-						message: "converting...",
-					},
-				}));
-
-				invoke("convert_webp", { inputPath }).then((message) => {
-					setImages((prev) => ({
-						...prev,
-						[inputPath]: {
-							inputPath,
-							isProgress: false,
-							message: message as string,
-						},
-					}));
-				});
-			}
-		});
-		return () => {
-			unlisten.then((fn) => fn());
-		};
-	}, []);
+	const { images, clearImages } = useImageFileDrop();
+	const { colorMode, toggleColorMode } = useColorMode();
 
 	return (
-		<div>
-			<div>
-				<h1>drop image here!</h1>
-				<p>{"dnd png/jpeg => webp converter."}</p>
-			</div>
-
-			<div />
-
-			<div>
-				<h2>files:</h2>
-				<ul>
-					{Object.entries(images).map(([key, image]) => (
-						<li key={key}>
-							<div>{image.inputPath}</div>
-							<div>{image.isProgress}</div>
-						</li>
-					))}
-				</ul>
-			</div>
-		</div>
+		<Flex
+			padding={4}
+			flexDirection="column"
+			gap={2}
+			justifyContent={"space-between"}
+			height={"100vh"}
+		>
+			<Flex flexDirection={"column"} gap={2}>
+				<Flex justifyContent={"space-between"}>
+					<Flex flexDirection={"column"}>
+						<Heading as="h1" size="xl">
+							dndimg
+						</Heading>
+						<Text>minimal lossless webp converter.</Text>
+					</Flex>
+					{colorMode === "light" ? (
+						<SunIcon onClick={toggleColorMode} />
+					) : (
+						<MoonIcon onClick={toggleColorMode} />
+					)}
+				</Flex>
+				<Divider />
+				<Flex flexDirection={"column"} gap={2}>
+					<Heading as="h2" size="sm">
+						drop image here! (support png, jpg only)
+					</Heading>
+					<List display="flex" flexDirection="column" gap={1}>
+						{Object.entries(images).map(([key, image]) => (
+							<ListItem
+								key={key}
+								display={"flex"}
+								gap={2}
+								flexDirection={"column"}
+							>
+								<Flex gap={2}>
+									<Flex
+										flexDirection={"column"}
+										justifyContent={"center"}
+										alignItems={"center"}
+									>
+										{image.isProgress ? (
+											<Spinner size="sm" />
+										) : (
+											<CheckIcon color={"green.500"} />
+										)}
+									</Flex>
+									<Text>{image.fileName}</Text>
+								</Flex>
+							</ListItem>
+						))}
+					</List>
+				</Flex>
+			</Flex>
+			<Flex gap={4} width={"full"}>
+				<Button width={"full"} onClick={clearImages}>
+					clear inputs
+				</Button>
+			</Flex>
+		</Flex>
 	);
 }
 

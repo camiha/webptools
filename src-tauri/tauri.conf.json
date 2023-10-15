@@ -38,7 +38,7 @@
         "fullscreen": false,
         "resizable": true,
         "title": "dndimg",
-        "width": 800,
+        "width": 400,
         "height": 600
       }
     ]
