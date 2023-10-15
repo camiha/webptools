@@ -5,7 +5,7 @@
 
 #[tauri::command]
 async fn convert_webp(input_path: String) -> String {
-    let output_path = input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp");
+    let output_path = input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp").replace(".PNG", ".webp").replace(".JPG", ".webp").replace(".JPEG", ".webp");
 
     if let Ok(img) = image::open(input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
@@ -34,7 +34,7 @@ fn get_image_info(input_path: String) -> ImageInfo {
         .expect("Failed to get input file metadata")
         .len();
     println!("Input size: {}", input_size);
-    let output_size: u64 = fs::metadata(input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp"))
+    let output_size: u64 = fs::metadata(input_path.replace(".png", ".webp").replace(".jpg", ".webp").replace(".jpeg", ".webp").replace(".PNG", ".webp").replace(".JPG", ".webp").replace(".JPEG", ".webp"))
         .expect("Failed to get output file metadata")
         .len();
     println!("Output size: {}", output_size);
