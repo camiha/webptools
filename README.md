@@ -2,7 +2,8 @@
 minimal Webp converter. drug and drop supported.
 
 ## releases
-[release](https://github.com/camiha/dndwebp/releases)
+note: code certificate not yet set.  
+[releases](https://github.com/camiha/dndwebp/releases)
 
 ## self build
 require:
