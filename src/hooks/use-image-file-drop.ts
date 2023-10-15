@@ -16,9 +16,11 @@ export type Image = {
 
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
+	let cleanupCounter = 0;
 
 	const clearImages = useCallback(() => {
 		setImages({});
+		cleanupCounter++;
 	}, []);
 
 	useEffect(() => {
@@ -67,7 +69,7 @@ export const useImageFileDrop = () => {
 		return () => {
 			unlisten.then((fn) => fn());
 		};
-	}, []);
+	}, [cleanupCounter]);
 
 	return { images, clearImages };
 };
