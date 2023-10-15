@@ -28,7 +28,7 @@ function App() {
 				<Flex justifyContent={"space-between"}>
 					<Flex flexDirection={"column"}>
 						<Heading as="h1" size="xl">
-							dndimg
+							dndwebp
 						</Heading>
 						<Text>minimal lossless webp converter.</Text>
 					</Flex>
