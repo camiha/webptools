@@ -60,14 +60,14 @@ function App() {
 											alignItems={"center"}
 										>
 											{image.isProgress ? (
-												<Spinner size="sm" />
+												<Spinner size="xs" />
 											) : (
-												<CheckIcon color={"green.500"} />
+												<CheckIcon fontSize={"xs"} color={"green.500"} />
 											)}
 										</Flex>
-										<Text>{image.fileName}</Text>
+										<Text fontSize={"xs"}>{image.fileName}</Text>
 									</Flex>
-									<Text>
+									<Text fontSize={"xs"}>
 										{image.reductionRate === 0 ? "-" : image.reductionRate}%
 									</Text>
 								</Flex>
