@@ -43,6 +43,11 @@ export const useImageFileDrop = () => {
 							input_size: number;
 							output_size: number;
 						};
+						const rate = Math.round(
+							(100 * (input_size - output_size)) / input_size,
+						);
+						const reductionRate = rate ? rate : 0;
+
 						setImages((prev) => ({
 							...prev,
 							[inputPath]: {
@@ -52,9 +57,7 @@ export const useImageFileDrop = () => {
 								message: message as string,
 								inputSize: input_size,
 								outputSize: output_size,
-								reductionRate: Math.round(
-									(100 * (input_size - output_size)) / input_size,
-								),
+								reductionRate,
 							},
 						}));
 					});
