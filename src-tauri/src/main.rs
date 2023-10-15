@@ -13,7 +13,7 @@ fn main() {
     tauri::Builder::default()
     .setup(|app| {
         // front => back
-        let id: tauri::EventHandler = app.listen_global("front-to-back", |event: tauri::Event| {
+        let _id: tauri::EventHandler = app.listen_global("front-to-back", |event: tauri::Event| {
             let input_path = event.payload().unwrap().trim_matches('"');
             let output_path = input_path.replace(".png", ".webp");
 
