@@ -16,6 +16,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.2.2",
     "@pandacss/dev": "^0.16.0",
     "@tauri-apps/cli": "^1.5.0",
     "@types/react": "^18.2.15",
