@@ -3,14 +3,23 @@ import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/tauri'
 import { css } from "../styled-system/css";
 
+type Image = {
+	[key: string]: { inputPath: string, isProgress: boolean, message: string }
+}
+
 function App() {
-	const [images, setImages] = useState<Set<{inputPath: string}>>(new Set());
+	const [images, setImages] = useState<Image>({});
 
 	useEffect(() => {
 		const unlisten = listen<string[]>('tauri://file-drop', (event) => {
 			for (const inputPath of event.payload) {
-				setImages((prev) => new Set([...prev, {inputPath}]));
-				invoke('convert_webp', { inputPath }).then((message) => console.log(message))
+				if (images[inputPath]) continue;
+
+				setImages((prev) => ({ ...prev, [inputPath]: { inputPath, isProgress: true, message: "converting..." } }));
+
+				invoke('convert_webp', { inputPath }).then((message) => {
+					setImages((prev) => ({ ...prev, [inputPath]: { inputPath, isProgress: false, message: message as string } }));
+				})
 			}
 		})
 		return () => {
@@ -54,8 +63,8 @@ function App() {
 			<div>
 				<h2>files:</h2>
 				<ul>
-					{Array.from(images).map((image) => (
-						<li key={image.inputPath}>
+					{Object.entries(images).map(([key, image]) => (
+						<li key={key}>
 							<div>{image.inputPath}</div>
 						</li>
 					))}
