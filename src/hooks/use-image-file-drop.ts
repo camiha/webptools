@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -14,9 +14,9 @@ export type Image = {
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
 
-	const clearImages = () => {
+	const clearImages = useCallback(() => {
 		setImages({});
-	};
+	}, []);
 
 	useEffect(() => {
 		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
