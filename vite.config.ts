@@ -17,4 +17,17 @@ export default defineConfig(async () => ({
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
   envPrefix: ["VITE_", "TAURI_"],
+
+  // panda css settings
+  // Whether to use css reset
+  preflight: true,
+
+  // Where to look for your css declarations
+  include: ["./src/**/*.{js,jsx,ts,tsx}", "./pages/**/*.{js,jsx,ts,tsx}"],
+
+  // Files to exclude
+  exclude: [],
+
+  // The output directory for your css system
+  outdir: "styled-system",
 }));
