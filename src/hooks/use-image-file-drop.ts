@@ -5,6 +5,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 export type Image = {
 	[key: string]: {
 		inputPath: string;
+		outputPath: string;
 		isProgress: boolean;
 		message: string;
 		fileName: string;
@@ -13,6 +14,12 @@ export type Image = {
 		reductionRate?: number;
 	};
 };
+
+const replaceExtension = (path: string, ext: string) => {
+	const pathArr = path.split(".");
+	pathArr.pop();
+	return `${pathArr.join(".")}.${ext}`;
+}
 
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
@@ -28,18 +35,26 @@ export const useImageFileDrop = () => {
 			for (const inputPath of event.payload) {
 				if (images[inputPath]) continue;
 				const fileName = inputPath.split("/").slice(-1)[0];
+				const outputPath = replaceExtension(inputPath, "webp");
+				const imagePaths = {
+					input_path: inputPath,
+					output_path: outputPath
+				}
+
+				console.log(imagePaths)
 
 				setImages((prev) => ({
 					...prev,
 					[inputPath]: {
 						inputPath,
+						outputPath,
 						fileName,
 						isProgress: true,
 						message: "converting...",
 					},
 				}));
 
-				invoke("convert_webp", { inputPath }).then((message) => {
+				invoke("convert_webp", { imagePaths }).then((message) => {
 					invoke("get_image_info", { inputPath }).then((info) => {
 						const { input_size, output_size } = info as {
 							input_size: number;
@@ -54,6 +69,7 @@ export const useImageFileDrop = () => {
 							...prev,
 							[inputPath]: {
 								inputPath,
+								outputPath,
 								fileName,
 								isProgress: false,
 								message: message as string,

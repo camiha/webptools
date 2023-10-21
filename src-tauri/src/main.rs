@@ -8,9 +8,25 @@ use std::fs;
 use webp;
 use webp::Encoder;
 
+#[derive(Debug, serde::Deserialize)]
+struct ImagePaths {
+    input_path: String,
+    output_path: String,
+}
+
+#[derive(Debug, serde::Serialize)]
+struct ImageInfo {
+    input_size: u64,
+    output_size: u64,
+}
+
 #[tauri::command]
-async fn convert_webp(input_path: String) -> String {
-    let output_path = replace_image_extension(input_path.clone());
+async fn convert_webp(image_paths: ImagePaths) -> String {
+    let input_path = image_paths.input_path;
+    let output_path = image_paths.output_path;
+
+    println!("Input path: {}", input_path);
+    println!("Output path: {}", output_path);
 
     if let Ok(img) = image::open(input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
@@ -25,12 +41,6 @@ async fn convert_webp(input_path: String) -> String {
     } else {
         return "Failed to open the image.".to_string();
     }
-}
-
-#[derive(Debug, serde::Serialize)]
-struct ImageInfo {
-    input_size: u64,
-    output_size: u64,
 }
 
 #[tauri::command]
