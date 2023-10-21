@@ -12,6 +12,7 @@ export type Image = {
 		inputSize?: number;
 		outputSize?: number;
 		reductionRate?: number;
+		isFailed: boolean;
 	};
 };
 
@@ -57,7 +58,7 @@ export const useImageFileDrop = () => {
 							fileName,
 							isProgress: false,
 							isFailed: true,
-							message: "not support extension",
+							message: "unsupport extension",
 						},
 					}));
 					continue;

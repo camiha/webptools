@@ -54,22 +54,29 @@ function App() {
 							>
 								<Flex gap={2} justifyContent={"space-between"}>
 									<Flex gap={2}>
-										<Flex
-											flexDirection={"column"}
-											justifyContent={"center"}
-											alignItems={"center"}
-										>
+										<>
+											<Flex
+												flexDirection={"column"}
+												justifyContent={"center"}
+												alignItems={"center"}
+											>
+												{image.isProgress ? (
+													<Spinner size="xs" />
+												) : image.isFailed === true ?
+													(
+														<CloseIcon fontSize={"xs"} color={"red.500"} />
+													) : (
+														<CheckIcon fontSize={"xs"} color={"green.500"} />
+													)}
+											</Flex>
 											{image.isProgress ? (
-												<Spinner size="xs" />
-											) : image.message ===
-											  "Image successfully encoded and saved as WebP." ? (
-												// todo: refactor message
-												<CheckIcon fontSize={"xs"} color={"green.500"} />
+												<Text fontSize={"xs"}>{image.fileName}</Text>
+											) : image.isFailed === true ? (
+												<Text fontSize={"xs"}>{image.fileName} ({image.message})</Text>
 											) : (
-												<CloseIcon fontSize={"xs"} color={"red.500"} />
+												<Text fontSize={"xs"}>{image.fileName}</Text>
 											)}
-										</Flex>
-										<Text fontSize={"xs"}>{image.fileName}</Text>
+										</>
 									</Flex>
 									<Text fontSize={"xs"}>
 										{image.reductionRate === 0 ? "-" : image.reductionRate}%
