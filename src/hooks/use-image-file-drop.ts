@@ -40,9 +40,6 @@ export const useImageFileDrop = () => {
 					input_path: inputPath,
 					output_path: outputPath
 				}
-
-				console.log(imagePaths)
-
 				setImages((prev) => ({
 					...prev,
 					[inputPath]: {
@@ -53,32 +50,29 @@ export const useImageFileDrop = () => {
 						message: "converting...",
 					},
 				}));
-
-				invoke("convert_webp", { imagePaths }).then((message) => {
-					invoke("get_image_info", { inputPath }).then((info) => {
-						const { input_size, output_size } = info as {
-							input_size: number;
-							output_size: number;
-						};
-						const rate = Math.round(
-							(100 * (input_size - output_size)) / input_size,
-						);
-						const reductionRate = rate ? rate : 0;
-
-						setImages((prev) => ({
-							...prev,
-							[inputPath]: {
-								inputPath,
-								outputPath,
-								fileName,
-								isProgress: false,
-								message: message as string,
-								inputSize: input_size,
-								outputSize: output_size,
-								reductionRate,
-							},
-						}));
-					});
+				invoke("convert_webp", { imagePaths }).then((info) => {
+					const { input_size, output_size, message } = info as {
+						input_size: number;
+						output_size: number;
+						message: string;
+					};
+					const rate = Math.round(
+						(100 * (input_size - output_size)) / input_size,
+					);
+					const reductionRate = rate ? rate : 0;
+					setImages((prev) => ({
+						...prev,
+						[inputPath]: {
+							inputPath,
+							outputPath,
+							fileName,
+							isProgress: false,
+							message,
+							inputSize: input_size,
+							outputSize: output_size,
+							reductionRate,
+						},
+					}));
 				});
 			}
 		});
