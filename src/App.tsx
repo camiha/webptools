@@ -1,8 +1,5 @@
 import { useImageFileDrop } from "./hooks/use-image-file-drop";
-import {
-	Divider,
-	Flex,
-} from "@chakra-ui/react";
+import { Divider, Flex } from "@chakra-ui/react";
 import { Header } from "./components/header";
 import { Footer } from "./components/footer";
 import { Content } from "./components/content";
@@ -21,9 +18,9 @@ function App() {
 			<Flex flexDirection={"column"} gap={2}>
 				<Header />
 				<Divider />
-				<Content images={images}/>
+				<Content images={images} />
 			</Flex>
-			<Footer onClick={clearImages}/>
+			<Footer onClick={clearImages} />
 		</Flex>
 	);
 }
