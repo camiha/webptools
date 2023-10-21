@@ -8,6 +8,8 @@ import {
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import type { Image } from "../hooks/use-image-file-drop";
 
+const ContentItem = ({ image }: { image: Image }) => {};
+
 export const Content = ({ images }: { images: Image }) => {
     return (
         <Flex flexDirection={"column"} gap={2}>
