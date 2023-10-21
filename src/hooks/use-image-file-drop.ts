@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
+import { isSupportExtension, replaceExtension } from "../utils";
 
 export type ImageItem = {
   inputPath: string;
@@ -16,17 +17,6 @@ export type ImageItem = {
 
 export type Image = {
   [key: string]: ImageItem;
-};
-
-const replaceExtension = (path: string, ext: string) => {
-  const pathArr = path.split(".");
-  pathArr.pop();
-  return `${pathArr.join(".")}.${ext}`;
-};
-
-const isSupportExtension = (path: string): boolean => {
-  const ext = path.split(".").slice(-1)[0];
-  return ["png", "jpg", "jpeg"].includes(ext);
 };
 
 export const useImageFileDrop = () => {
@@ -51,7 +41,6 @@ export const useImageFileDrop = () => {
         };
 
         if (!isSupportExtension(inputPath)) {
-          // console.log("not support extension", inputPath);
           setImages((prev) => ({
             ...prev,
             [inputPath]: {
