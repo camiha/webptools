@@ -6,10 +6,10 @@ import {
 	List,
 	ListItem,
 	Spinner,
-	Button,
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { Header } from "./components/header";
+import { Footer } from "./components/footer";
 
 function App() {
 	const { images, clearImages } = useImageFileDrop();
@@ -73,16 +73,7 @@ function App() {
 					</List>
 				</Flex>
 			</Flex>
-			<Flex flexDirection={"column"} gap={2}>
-				<Text textAlign={"center"}>
-					drop image here. (support png, jpg only)
-				</Text>
-				<Flex gap={4} width={"full"}>
-					<Button width={"full"} onClick={clearImages}>
-						clear inputs
-					</Button>
-				</Flex>
-			</Flex>
+			<Footer onClick={clearImages}/>
 		</Flex>
 	);
 }
