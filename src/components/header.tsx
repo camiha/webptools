@@ -1,4 +1,3 @@
-
 import {
 	Flex,
 	Heading,
@@ -9,6 +8,8 @@ import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 export const Header = () => {
 	const { colorMode, toggleColorMode } = useColorMode();
+    const isLight = colorMode === "light";
+    const isDark = colorMode === "dark";
 
     return (
         <Flex justifyContent={"space-between"}>
@@ -18,11 +19,8 @@ export const Header = () => {
             </Heading>
             <Text>minimal lossless webp converter.</Text>
         </Flex>
-        {colorMode === "light" ? (
-            <SunIcon onClick={toggleColorMode} />
-        ) : (
-            <MoonIcon onClick={toggleColorMode} />
-        )}
+        {isLight && (<SunIcon onClick={toggleColorMode} />)}
+        {isDark && (<MoonIcon onClick={toggleColorMode} />)}
     </Flex>
     )
 }
