@@ -21,6 +21,11 @@ const replaceExtension = (path: string, ext: string) => {
 	return `${pathArr.join(".")}.${ext}`;
 }
 
+const isSupportExtension = (path: string): boolean => {
+	const ext = path.split(".").slice(-1)[0];
+	return ["png", "jpg", "jpeg"].includes(ext);
+}
+
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
 	let cleanupCounter = 0;
@@ -34,12 +39,30 @@ export const useImageFileDrop = () => {
 		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
 			for (const inputPath of event.payload) {
 				if (images[inputPath]) continue;
+
 				const fileName = inputPath.split("/").slice(-1)[0];
 				const outputPath = replaceExtension(inputPath, "webp");
 				const imagePaths = {
 					input_path: inputPath,
 					output_path: outputPath
 				}
+
+				if (!isSupportExtension(inputPath)) {
+					// console.log("not support extension", inputPath);
+					setImages((prev) => ({
+						...prev,
+						[inputPath]: {
+							inputPath,
+							outputPath,
+							fileName,
+							isProgress: false,
+							isFailed: true,
+							message: "not support extension",
+						},
+					}));
+					continue;
+				}
+
 				setImages((prev) => ({
 					...prev,
 					[inputPath]: {
@@ -47,9 +70,11 @@ export const useImageFileDrop = () => {
 						outputPath,
 						fileName,
 						isProgress: true,
+						isFailed: false,
 						message: "converting...",
 					},
 				}));
+			
 				invoke("convert_webp", { imagePaths }).then((info) => {
 					const { input_size, output_size, message } = info as {
 						input_size: number;
@@ -67,6 +92,7 @@ export const useImageFileDrop = () => {
 							outputPath,
 							fileName,
 							isProgress: false,
+							isFailed: false,
 							message,
 							inputSize: input_size,
 							outputSize: output_size,
