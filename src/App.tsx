@@ -2,19 +2,17 @@ import { useImageFileDrop } from "./hooks/use-image-file-drop";
 import {
 	Divider,
 	Flex,
-	Heading,
 	Text,
 	List,
 	ListItem,
 	Spinner,
 	Button,
-	useColorMode,
 } from "@chakra-ui/react";
-import { CheckIcon, MoonIcon, SunIcon, CloseIcon } from "@chakra-ui/icons";
+import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { Header } from "./components/header";
 
 function App() {
 	const { images, clearImages } = useImageFileDrop();
-	const { colorMode, toggleColorMode } = useColorMode();
 
 	return (
 		<Flex
@@ -25,19 +23,7 @@ function App() {
 			height={"100vh"}
 		>
 			<Flex flexDirection={"column"} gap={2}>
-				<Flex justifyContent={"space-between"}>
-					<Flex flexDirection={"column"}>
-						<Heading as="h1" size="xl">
-							dndwebp
-						</Heading>
-						<Text>minimal lossless webp converter.</Text>
-					</Flex>
-					{colorMode === "light" ? (
-						<SunIcon onClick={toggleColorMode} />
-					) : (
-						<MoonIcon onClick={toggleColorMode} />
-					)}
-				</Flex>
+				<Header />
 				<Divider />
 				<Flex flexDirection={"column"} gap={2}>
 					<Flex justifyContent={"space-between"}>
