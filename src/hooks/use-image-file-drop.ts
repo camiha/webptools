@@ -71,27 +71,28 @@ export const useImageFileDrop = () => {
 					input_size: number;
 					output_size: number;
 					message: string;
-				}>("convert_webp", { imagePaths }).then((info) => {
-					const { input_size, output_size, message } = info;
-					const rate = Math.round(
-						(100 * (input_size - output_size)) / input_size,
-					);
-					const reductionRate = rate ? rate : 0;
-					setImages((prev) => ({
-						...prev,
-						[inputPath]: {
-							inputPath,
-							outputPath,
-							fileName,
-							isProgress: false,
-							isFailed: false,
-							message,
-							inputSize: input_size,
-							outputSize: output_size,
-							reductionRate,
-						},
-					}));
-				});
+				}>("convert_webp", { imagePaths }).then(
+					({ input_size, output_size, message }) => {
+						const rate = Math.round(
+							(100 * (input_size - output_size)) / input_size,
+						);
+						const reductionRate = rate ? rate : 0;
+						setImages((prev) => ({
+							...prev,
+							[inputPath]: {
+								inputPath,
+								outputPath,
+								fileName,
+								isProgress: false,
+								isFailed: false,
+								message,
+								inputSize: input_size,
+								outputSize: output_size,
+								reductionRate,
+							},
+						}));
+					},
+				);
 			}
 		});
 		return () => {
