@@ -1,5 +1,12 @@
 {
-  "cSpell.words": ["Tauri"],
+  "cSpell.words": [
+    "chakra",
+    "dndwebp",
+    "Tauri",
+    "unlisten",
+    "unsupport",
+    "webp"
+  ],
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome"
