@@ -67,12 +67,12 @@ export const useImageFileDrop = () => {
 					},
 				}));
 
-				invoke("convert_webp", { imagePaths }).then((info) => {
-					const { input_size, output_size, message } = info as {
-						input_size: number;
-						output_size: number;
-						message: string;
-					};
+				invoke<{
+					input_size: number;
+					output_size: number;
+					message: string;
+				}>("convert_webp", { imagePaths }).then((info) => {
+					const { input_size, output_size, message } = info;
 					const rate = Math.round(
 						(100 * (input_size - output_size)) / input_size,
 					);
