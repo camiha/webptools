@@ -1,13 +1,26 @@
 # webptools
-minimal webp converter. drug and drop supported.
-![screenshot](https://raw.githubusercontent.com/camiha/webptools/develop/screenshot.webp)
+minimal webp converter.   
+![screenshot](https://github.com/camiha/webptools/assets/65489256/ca0daff5-11ed-4029-b62f-1565da03f93c)
 
+## Feature
+- convert png/jpg to webp.
+- support drag and drop file input.
+- support encode options. (quality, lossless)
+- delete original file when complete encode.
+- toggle dark/light mode theme.
 
-## releases
+## Releases
 note: code certificate not yet set.  
 [releases](https://github.com/camiha/webptools/releases)
 
-## self build
+## Todo
+- support directory input.
+- using libvips.
+- refactor error handlings.
+- add advanced options.
+- add tests.
+
+## Self build
 require:
 - node.js 18+
 - rust 1.7+
