@@ -24,6 +24,7 @@ import {
 } from "../providers/contexts";
 import { useContext } from "react";
 import { EncodeOption } from "../types";
+import { useEncodeOptionSave } from "../hooks/use-encode-option";
 
 export const OptionButton = () => {
 	const useEncodeOption = () => useContext(EncodeOptionContext);
@@ -31,12 +32,15 @@ export const OptionButton = () => {
 
 	const useSetEncodeOption = () => useContext(SetEncodeOptionContext);
 	const setEncodeOption = useSetEncodeOption();
+	const { saveEncodeOption } = useEncodeOptionSave({
+		setEncodeOption,
+	});
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { register, handleSubmit } = useForm<EncodeOption>();
 
 	const onSubmit: SubmitHandler<EncodeOption> = (data) => {
-		setEncodeOption({
+		saveEncodeOption({
 			...data,
 			quality: Number(data.quality),
 			lossless: false,

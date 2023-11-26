@@ -78,6 +78,7 @@ async fn convert_webp(image_input_info: ImageInputInfo) -> ImageInfo {
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![convert_webp])
+        .plugin(tauri_plugin_store::Builder::default().build())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

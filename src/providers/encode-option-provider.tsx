@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { EncodeOptionContext, SetEncodeOptionContext } from "./contexts";
+import { loadConfig } from "../store";
 
 export const EncodeOptionProvider = ({
 	children,
@@ -9,6 +10,14 @@ export const EncodeOptionProvider = ({
 		lossless: false,
 		quality: 75,
 	});
+
+	useEffect(() => {
+		const load = async () => {
+			const config = await loadConfig();
+			setEncodeOption(config);
+		};
+		void load();
+	}, []);
 
 	return (
 		<EncodeOptionContext.Provider value={encodeOption}>
