@@ -24,7 +24,7 @@ import {
 	EncodeOptionContext,
 	SetEncodeOptionContext,
 } from "../providers/contexts";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { EncodeOption } from "../types";
 import { useEncodeOptionSave } from "../hooks/use-encode-option";
 
@@ -39,7 +39,7 @@ export const OptionButton = () => {
 	});
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const { register, handleSubmit } = useForm<EncodeOption>();
+	const { register, handleSubmit, setValue } = useForm<EncodeOption>();
 
 	const onSubmit: SubmitHandler<EncodeOption> = (data) => {
 		saveEncodeOption({
@@ -50,12 +50,20 @@ export const OptionButton = () => {
 		onClose();
 	};
 
+	const handleModalClose = () => {
+		if (encodeOption !== null) {
+			setValue("quality", encodeOption.quality);
+			setValue("lossless", encodeOption.lossless);
+		}
+		onClose();
+	};
+
 	return (
 		<>
 			<Button width={"full"} onClick={onOpen}>
 				options
 			</Button>
-			<Modal isOpen={isOpen} onClose={onClose} isCentered>
+			<Modal isOpen={isOpen} onClose={handleModalClose} isCentered>
 				<ModalOverlay />
 				<ModalContent maxWidth={320}>
 					<ModalHeader>encode options</ModalHeader>
@@ -93,7 +101,7 @@ export const OptionButton = () => {
 							<Button type="submit" colorScheme="blue" mr={3}>
 								save
 							</Button>
-							<Button variant="ghost" onClick={onClose}>
+							<Button variant="ghost" onClick={handleModalClose}>
 								close
 							</Button>
 						</ModalFooter>
