@@ -24,7 +24,7 @@ import {
 	EncodeOptionContext,
 	SetEncodeOptionContext,
 } from "../providers/contexts";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { EncodeOption } from "../types";
 import { useEncodeOptionSave } from "../hooks/use-encode-option";
 
