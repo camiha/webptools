@@ -46,6 +46,7 @@ export const OptionButton = () => {
 			...data,
 			quality: Number(data.quality),
 			lossless: data.lossless,
+			delete_original: data.delete_original,
 		});
 		onClose();
 	};
@@ -92,6 +93,9 @@ export const OptionButton = () => {
 										<FormLabel>others</FormLabel>
 										<Checkbox {...register("lossless")}>
 											using lossless option
+										</Checkbox>
+										<Checkbox {...register("delete_original")}>
+											delete original file
 										</Checkbox>
 									</FormControl>
 								</VStack>

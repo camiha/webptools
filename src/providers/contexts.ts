@@ -1,9 +1,5 @@
 import { Dispatch, SetStateAction, createContext } from "react";
-
-type EncodeOption = {
-	lossless: boolean;
-	quality: number;
-};
+import { EncodeOption } from "../types";
 
 export const EncodeOptionContext = createContext<EncodeOption | null>(null);
 

@@ -13,14 +13,18 @@ use webp;
 use webp::Encoder;
 
 const STORE_PATH: &str = ".settings.json";
-struct WebPEncodeOption {
+
+#[derive(serde::Deserialize, serde::Serialize)]
+struct EncodeOption {
     quality: f32,
     lossless: bool,
+    delete_original: bool,
 }
 
-static DEFAULT_WEBP_ENCODE_OPTION: WebPEncodeOption = WebPEncodeOption {
+static DEFAULT_WEBP_ENCODE_OPTION: EncodeOption = EncodeOption {
     quality: 75.0,
     lossless: false,
+    delete_original: false,
 };
 
 #[derive(Debug, serde::Deserialize)]
@@ -34,12 +38,6 @@ struct ImageInfo {
     input_size: u64,
     output_size: u64,
     message: String,
-}
-
-#[derive(serde::Deserialize, serde::Serialize)]
-struct EncodeOption {
-    quality: f32,
-    lossless: bool,
 }
 
 #[tauri::command]
@@ -62,7 +60,7 @@ fn load_encode_option(
         return DEFAULT_WEBP_ENCODE_OPTION.quality;
     });
 
-    let lossless = with_store(app_handle.clone(), stores, path.clone(), |store| {
+    let lossless = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
         Ok(store
             .get("lossless")
             .map(|v| v.as_bool().unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless))
@@ -71,7 +69,25 @@ fn load_encode_option(
     .unwrap_or_else(|_| {
         return DEFAULT_WEBP_ENCODE_OPTION.lossless;
     });
-    return EncodeOption { quality, lossless };
+
+    let delete_original = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
+        Ok(store
+            .get("delete_original")
+            .map(|v| {
+                v.as_bool()
+                    .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.delete_original)
+            })
+            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.delete_original))
+    })
+    .unwrap_or_else(|_| {
+        return DEFAULT_WEBP_ENCODE_OPTION.delete_original;
+    });
+
+    return EncodeOption {
+        quality,
+        lossless,
+        delete_original,
+    };
 }
 
 #[tauri::command]
@@ -90,6 +106,13 @@ fn save_encode_option(
         store.insert("lossless".into(), json!(encode_option.lossless))
     })?;
 
+    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
+        store.insert(
+            "delete_original".into(),
+            json!(encode_option.delete_original),
+        )
+    })?;
+
     Ok(())
 }
 
@@ -97,8 +120,6 @@ fn save_encode_option(
 async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOption) -> ImageInfo {
     let quality = encode_option.quality;
     let lossless = encode_option.lossless;
-
-    println!("quality: {}, lossless: {}", quality, lossless);
 
     let input_path = image_input_info.input_path;
     let output_path = image_input_info.output_path;
@@ -111,13 +132,20 @@ async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOpt
                     fs::write(&output_path, output_path_slice)
                         .expect("Failed to write WebP data to file");
 
-                    let input_size = fs::metadata(input_path)
+                    let input_size = fs::metadata(&input_path)
                         .expect("Failed to get input file metadata")
                         .len();
 
                     let output_size = fs::metadata(&output_path)
                         .expect("Failed to get output file metadata")
                         .len();
+
+                    if encode_option.delete_original {
+                        match fs::remove_file(&input_path) {
+                            Ok(()) => println!("File was successfully deleted."),
+                            Err(e) => println!("Error deleting file: {}", e),
+                        }
+                    }
 
                     return ImageInfo {
                         input_size,
