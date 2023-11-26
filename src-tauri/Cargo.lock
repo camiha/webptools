@@ -608,18 +608,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd0c93bb4b0c6d9b77f4435b0ae98c24d17f1c45b2ff844c6151a07256ca923b"
 
 [[package]]
-name = "dndwebp"
-version = "0.0.0"
-dependencies = [
- "image",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "webp",
-]
-
-[[package]]
 name = "dtoa"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3481,6 +3469,18 @@ checksum = "4bb5d8e7814e92297b0e1c773ce43d290bef6c17452dafd9fc49e5edb5beba71"
 dependencies = [
  "image",
  "libwebp-sys",
+]
+
+[[package]]
+name = "webptools"
+version = "0.0.0"
+dependencies = [
+ "image",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "webp",
 ]
 
 [[package]]

@@ -10,7 +10,7 @@ export const Header = () => {
 		<Flex justifyContent={"space-between"}>
 			<Flex flexDirection={"column"}>
 				<Heading as="h1" size="xl">
-					dndwebp
+					webptools
 				</Heading>
 				<Text>minimal lossless webp converter.</Text>
 			</Flex>
