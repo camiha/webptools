@@ -38,7 +38,8 @@ export const OptionButton = () => {
 	const onSubmit: SubmitHandler<EncodeOption> = (data) => {
 		setEncodeOption({
 			...data,
-			quality: data.quality,
+			quality: Number(data.quality),
+			lossless: false,
 		});
 		onClose();
 	};

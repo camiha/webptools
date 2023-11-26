@@ -30,8 +30,6 @@ async fn convert_webp(image_input_info: ImageInputInfo) -> ImageInfo {
     let lossless = image_input_info.lossless;
     let quality = image_input_info.quality;
 
-    println!("quality: {}", quality);
-
     if let Ok(img) = image::open(&input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
             match encoder.encode_simple(lossless, quality) {

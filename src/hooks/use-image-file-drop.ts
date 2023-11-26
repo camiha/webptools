@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { EncodeOptionContext } from "../providers/contexts";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { isSupportExtension, replaceExtension } from "../utils";
@@ -21,15 +22,17 @@ export type Image = {
 
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
-	let cleanupCounter = 0;
 
+	const useEncodeOption = () => useContext(EncodeOptionContext);
+	const encodeOption = useEncodeOption();
+
+	let cleanupCounter = 0;
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const clearImages = useCallback(() => {
 		setImages({});
 		cleanupCounter++;
 	}, []);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
 			for (const inputPath of event.payload) {
@@ -40,8 +43,7 @@ export const useImageFileDrop = () => {
 				const imageInputInfo = {
 					input_path: inputPath,
 					output_path: outputPath,
-					lossless: false,
-					quality: 100,
+					...encodeOption,
 				};
 
 				if (!isSupportExtension(inputPath)) {
@@ -102,7 +104,7 @@ export const useImageFileDrop = () => {
 		return () => {
 			unlisten.then((fn) => fn());
 		};
-	}, [cleanupCounter]);
+	}, [images, encodeOption]);
 
 	return { images, clearImages };
 };
