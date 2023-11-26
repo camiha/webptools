@@ -9,9 +9,11 @@ use webp;
 use webp::Encoder;
 
 #[derive(Debug, serde::Deserialize)]
-struct ImagePaths {
+struct ImageInputInfo {
     input_path: String,
     output_path: String,
+    lossless: bool,
+    quality: f32,
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -22,29 +24,43 @@ struct ImageInfo {
 }
 
 #[tauri::command]
-async fn convert_webp(image_paths: ImagePaths) -> ImageInfo {
-    let input_path = image_paths.input_path;
-    let output_path = image_paths.output_path;
+async fn convert_webp(image_input_info: ImageInputInfo) -> ImageInfo {
+    let input_path = image_input_info.input_path;
+    let output_path = image_input_info.output_path;
+    let lossless = image_input_info.lossless;
+    let quality = image_input_info.quality;
+
+    println!("quality: {}", quality);
 
     if let Ok(img) = image::open(&input_path) {
         if let Ok(encoder) = Encoder::from_image(&img) {
-            let webp_output = encoder.encode_lossless();
-            let output_path_slice: &[u8] = &webp_output;
-            fs::write(&output_path, output_path_slice).expect("Failed to write WebP data to file");
+            match encoder.encode_simple(lossless, quality) {
+                Ok(webp_output) => {
+                    let output_path_slice: &[u8] = &webp_output;
+                    fs::write(&output_path, output_path_slice).expect("Failed to write WebP data to file");
 
-            let input_size = fs::metadata(input_path)
-                .expect("Failed to get input file metadata")
-                .len();
+                    let input_size = fs::metadata(input_path)
+                        .expect("Failed to get input file metadata")
+                        .len();
 
-            let output_size = fs::metadata(&output_path)
-                .expect("Failed to get output file metadata")
-                .len();
+                    let output_size = fs::metadata(&output_path)
+                        .expect("Failed to get output file metadata")
+                        .len();
 
-            return ImageInfo {
-                input_size,
-                output_size,
-                message: "Image successfully encoded and saved as WebP.".to_string(),
-            };
+                    return ImageInfo {
+                        input_size,
+                        output_size,
+                        message: "Image successfully encoded and saved as WebP.".to_string(),
+                    };
+                },
+                Err(_) => {
+                    return ImageInfo {
+                        input_size: 0,
+                        output_size: 0,
+                        message: "Failed to encode image as WebP.".to_string(),
+                    };
+                }
+            }
         } else {
             return ImageInfo {
                 input_size: 0,

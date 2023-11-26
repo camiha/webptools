@@ -23,11 +23,13 @@ export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
 	let cleanupCounter = 0;
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const clearImages = useCallback(() => {
 		setImages({});
 		cleanupCounter++;
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
 			for (const inputPath of event.payload) {
@@ -35,9 +37,11 @@ export const useImageFileDrop = () => {
 
 				const fileName = inputPath.split("/").slice(-1)[0];
 				const outputPath = replaceExtension(inputPath, "webp");
-				const imagePaths = {
+				const imageInputInfo = {
 					input_path: inputPath,
 					output_path: outputPath,
+					lossless: false,
+					quality: 100,
 				};
 
 				if (!isSupportExtension(inputPath)) {
@@ -71,7 +75,7 @@ export const useImageFileDrop = () => {
 					input_size: number;
 					output_size: number;
 					message: string;
-				}>("convert_webp", { imagePaths }).then(
+				}>("convert_webp", { imageInputInfo }).then(
 					({ input_size, output_size, message }) => {
 						const rate = Math.round(
 							(100 * (input_size - output_size)) / input_size,
