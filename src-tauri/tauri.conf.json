@@ -7,8 +7,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "dndwebp",
-    "version": "0.0.2"
+    "productName": "webptools",
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -21,7 +21,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.camiha",
+      "identifier": "io.github.camiha.webptools",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -37,7 +37,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "dndwebp",
+        "title": "webptools",
         "width": 400,
         "height": 600
       }

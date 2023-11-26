@@ -1,5 +1,12 @@
 {
-  "cSpell.words": ["Tauri"],
+  "cSpell.words": [
+    "chakra",
+    "webptools",
+    "Tauri",
+    "unlisten",
+    "unsupport",
+    "webp"
+  ],
   "[typescript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome"
@@ -7,5 +14,9 @@
   "[typescriptreact]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
   }
 }

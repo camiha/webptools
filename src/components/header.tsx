@@ -10,9 +10,9 @@ export const Header = () => {
 		<Flex justifyContent={"space-between"}>
 			<Flex flexDirection={"column"}>
 				<Heading as="h1" size="xl">
-					dndwebp
+					webptools
 				</Heading>
-				<Text>minimal lossless webp converter.</Text>
+				<Text>minimal webp converter.</Text>
 			</Flex>
 			{isLight && <SunIcon onClick={toggleColorMode} />}
 			{isDark && <MoonIcon onClick={toggleColorMode} />}

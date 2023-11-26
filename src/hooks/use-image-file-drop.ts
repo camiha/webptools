@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { EncodeOptionContext } from "../providers/contexts";
 import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 import { isSupportExtension, replaceExtension } from "../utils";
@@ -21,8 +22,12 @@ export type Image = {
 
 export const useImageFileDrop = () => {
 	const [images, setImages] = useState<Image>({});
-	let cleanupCounter = 0;
 
+	const useEncodeOption = () => useContext(EncodeOptionContext);
+	const encodeOption = useEncodeOption();
+
+	let cleanupCounter = 0;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	const clearImages = useCallback(() => {
 		setImages({});
 		cleanupCounter++;
@@ -35,7 +40,7 @@ export const useImageFileDrop = () => {
 
 				const fileName = inputPath.split("/").slice(-1)[0];
 				const outputPath = replaceExtension(inputPath, "webp");
-				const imagePaths = {
+				const imageInputInfo = {
 					input_path: inputPath,
 					output_path: outputPath,
 				};
@@ -67,37 +72,38 @@ export const useImageFileDrop = () => {
 					},
 				}));
 
-				invoke("convert_webp", { imagePaths }).then((info) => {
-					const { input_size, output_size, message } = info as {
-						input_size: number;
-						output_size: number;
-						message: string;
-					};
-					const rate = Math.round(
-						(100 * (input_size - output_size)) / input_size,
-					);
-					const reductionRate = rate ? rate : 0;
-					setImages((prev) => ({
-						...prev,
-						[inputPath]: {
-							inputPath,
-							outputPath,
-							fileName,
-							isProgress: false,
-							isFailed: false,
-							message,
-							inputSize: input_size,
-							outputSize: output_size,
-							reductionRate,
-						},
-					}));
-				});
+				invoke<{
+					input_size: number;
+					output_size: number;
+					message: string;
+				}>("convert_webp", { imageInputInfo, encodeOption }).then(
+					({ input_size, output_size, message }) => {
+						const rate = Math.round(
+							(100 * (input_size - output_size)) / input_size,
+						);
+						const reductionRate = rate ? rate : 0;
+						setImages((prev) => ({
+							...prev,
+							[inputPath]: {
+								inputPath,
+								outputPath,
+								fileName,
+								isProgress: false,
+								isFailed: false,
+								message,
+								inputSize: input_size,
+								outputSize: output_size,
+								reductionRate,
+							},
+						}));
+					},
+				);
 			}
 		});
 		return () => {
 			unlisten.then((fn) => fn());
 		};
-	}, [cleanupCounter]);
+	}, [images, encodeOption]);
 
 	return { images, clearImages };
 };

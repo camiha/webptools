@@ -1,11 +1,11 @@
-# dndwebp
-minimal lossless webp converter. drug and drop supported.
-![screenshot](https://raw.githubusercontent.com/camiha/dndwebp/develop/screenshot.webp)
+# webptools
+minimal webp converter. drug and drop supported.
+![screenshot](https://raw.githubusercontent.com/camiha/webptools/develop/screenshot.webp)
 
 
 ## releases
 note: code certificate not yet set.  
-[releases](https://github.com/camiha/dndwebp/releases)
+[releases](https://github.com/camiha/webptools/releases)
 
 ## self build
 require:
