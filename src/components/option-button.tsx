@@ -7,6 +7,7 @@ import {
 	ModalBody,
 	ModalCloseButton,
 	Button,
+	Checkbox,
 	useDisclosure,
 	FormControl,
 	FormLabel,
@@ -15,6 +16,7 @@ import {
 	NumberInputStepper,
 	NumberIncrementStepper,
 	NumberDecrementStepper,
+	VStack,
 } from "@chakra-ui/react";
 
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -43,7 +45,7 @@ export const OptionButton = () => {
 		saveEncodeOption({
 			...data,
 			quality: Number(data.quality),
-			lossless: false,
+			lossless: data.lossless,
 		});
 		onClose();
 	};
@@ -61,22 +63,30 @@ export const OptionButton = () => {
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<ModalBody>
 							{encodeOption !== null && (
-								<FormControl>
-									<FormLabel>quality</FormLabel>
-									<NumberInput
-										defaultValue={encodeOption.quality}
-										min={0}
-										max={100}
-									>
-										<NumberInputField
-											{...register("quality", { required: true })}
-										/>
-										<NumberInputStepper>
-											<NumberIncrementStepper />
-											<NumberDecrementStepper />
-										</NumberInputStepper>
-									</NumberInput>
-								</FormControl>
+								<VStack spacing={4}>
+									<FormControl>
+										<FormLabel>quality</FormLabel>
+										<NumberInput
+											defaultValue={encodeOption.quality}
+											min={0}
+											max={100}
+										>
+											<NumberInputField
+												{...register("quality", { required: true })}
+											/>
+											<NumberInputStepper>
+												<NumberIncrementStepper />
+												<NumberDecrementStepper />
+											</NumberInputStepper>
+										</NumberInput>
+									</FormControl>
+									<FormControl>
+										<FormLabel>others</FormLabel>
+										<Checkbox {...register("lossless")}>
+											using lossless option
+										</Checkbox>
+									</FormControl>
+								</VStack>
 							)}
 						</ModalBody>
 						<ModalFooter>

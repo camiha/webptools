@@ -71,7 +71,6 @@ fn load_encode_option(
     .unwrap_or_else(|_| {
         return DEFAULT_WEBP_ENCODE_OPTION.lossless;
     });
-
     return EncodeOption { quality, lossless };
 }
 
@@ -98,6 +97,8 @@ fn save_encode_option(
 async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOption) -> ImageInfo {
     let quality = encode_option.quality;
     let lossless = encode_option.lossless;
+
+    println!("quality: {}, lossless: {}", quality, lossless);
 
     let input_path = image_input_info.input_path;
     let output_path = image_input_info.output_path;
