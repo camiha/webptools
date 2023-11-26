@@ -12,7 +12,7 @@ export const Header = () => {
 				<Heading as="h1" size="xl">
 					webptools
 				</Heading>
-				<Text>minimal lossless webp converter.</Text>
+				<Text>minimal webp converter.</Text>
 			</Flex>
 			{isLight && <SunIcon onClick={toggleColorMode} />}
 			{isDark && <MoonIcon onClick={toggleColorMode} />}
