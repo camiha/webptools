@@ -18,18 +18,28 @@ import {
 } from "@chakra-ui/react";
 
 import { SubmitHandler, useForm } from "react-hook-form";
-
-type Inputs = {
-	quality: number;
-};
+import {
+	EncodeOptionContext,
+	SetEncodeOptionContext,
+} from "../providers/contexts";
+import { useContext } from "react";
+import { EncodeOption } from "../types";
 
 export const OptionButton = () => {
+	const useEncodeOption = () => useContext(EncodeOptionContext);
+	const { quality } = useEncodeOption();
+
+	const useSetEncodeOption = () => useContext(SetEncodeOptionContext);
+	const setEncodeOption = useSetEncodeOption();
+
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { register, handleSubmit } = useForm<EncodeOption>();
 
-	const { register, handleSubmit } = useForm<Inputs>();
-
-	const onSubmit: SubmitHandler<Inputs> = (data) => {
-		console.log(data);
+	const onSubmit: SubmitHandler<EncodeOption> = (data) => {
+		setEncodeOption({
+			...data,
+			quality: data.quality,
+		});
 		onClose();
 	};
 
@@ -47,7 +57,7 @@ export const OptionButton = () => {
 						<ModalBody>
 							<FormControl>
 								<FormLabel>quality</FormLabel>
-								<NumberInput defaultValue={80} min={0} max={100}>
+								<NumberInput defaultValue={quality} min={0} max={100}>
 									<NumberInputField
 										{...register("quality", { required: true })}
 									/>
