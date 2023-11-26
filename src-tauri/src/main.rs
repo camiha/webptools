@@ -7,12 +7,21 @@ use image;
 use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
-use tauri::{Manager, State, Wry};
+use tauri::{State, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
 use webp;
 use webp::Encoder;
 
 const STORE_PATH: &str = ".settings.json";
+struct WebPEncodeOption {
+    quality: f32,
+    lossless: bool,
+}
+
+static DEFAULT_WEBP_ENCODE_OPTION: WebPEncodeOption = WebPEncodeOption {
+    quality: 75.0,
+    lossless: false,
+};
 
 #[derive(Debug, serde::Deserialize)]
 struct ImageInputInfo {
@@ -43,20 +52,20 @@ fn load_encode_option(
     let quality = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
         Ok(store
             .get("quality")
-            .map(|v| v.as_f64().unwrap_or(75.0) as f32)
-            .unwrap_or(75.0))
+            .map(|v| v.as_f64().unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.quality.into()) as f32)
+            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.quality))
     })
     .unwrap_or_else(|_| {
-        return 75.0;
+        return DEFAULT_WEBP_ENCODE_OPTION.quality;
     });
 
     let lossless = with_store(app_handle.clone(), stores, path.clone(), |store| {
         Ok(store
             .get("lossless")
-            .map(|v| v.as_bool().unwrap_or(false))
-            .unwrap_or(false))
+            .map(|v| v.as_bool().unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless))
+            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless))
     }).unwrap_or_else(|_| {
-        return false;
+        return DEFAULT_WEBP_ENCODE_OPTION.lossless;
     });
 
     return EncodeOption { quality, lossless };
@@ -138,19 +147,7 @@ async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOpt
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        .setup(|app| {
-            let path = PathBuf::from(STORE_PATH);
-            let stores = app.state::<StoreCollection<Wry>>();
-
-            with_store(app.handle(), stores, path, |store| {
-                Ok(store
-                    .get("quality")
-                    .map(|v| v.as_f64().unwrap_or(75.0) as f32)
-                    .unwrap_or(75.0))
-            })?;
-
-            Ok(())
-        })
+ 
         .invoke_handler(tauri::generate_handler![
             convert_webp,
             load_encode_option,
