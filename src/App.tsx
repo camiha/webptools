@@ -20,7 +20,7 @@ function App() {
 				<Divider />
 				<Content images={images} />
 			</Flex>
-			<Footer onClick={clearImages} />
+			<Footer onClickReset={clearImages} />
 		</Flex>
 	);
 }
