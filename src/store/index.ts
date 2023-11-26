@@ -6,5 +6,6 @@ export const saveConfig = async (encodeOption: EncodeOption) => {
 };
 
 export const loadConfig = async (): Promise<EncodeOption> => {
-	return await invoke<EncodeOption>("load_encode_option", {});
+	const result = await invoke<EncodeOption>("load_encode_option", {});
+	return result;
 };

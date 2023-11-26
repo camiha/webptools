@@ -5,11 +5,8 @@ type EncodeOption = {
 	quality: number;
 };
 
-export const EncodeOptionContext = createContext<EncodeOption>({
-	lossless: false,
-	quality: 75,
-});
+export const EncodeOptionContext = createContext<EncodeOption | null>(null);
 
 export const SetEncodeOptionContext = createContext<
-	Dispatch<SetStateAction<EncodeOption>>
+	Dispatch<SetStateAction<EncodeOption | null>>
 >(() => undefined);

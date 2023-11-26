@@ -7,10 +7,12 @@ use image;
 use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
+use tauri::{Manager, State, Wry};
+use tauri_plugin_store::{with_store, StoreCollection};
 use webp;
 use webp::Encoder;
 
-use tauri_plugin_store::StoreBuilder;
+const STORE_PATH: &str = ".settings.json";
 
 #[derive(Debug, serde::Deserialize)]
 struct ImageInputInfo {
@@ -32,46 +34,57 @@ struct EncodeOption {
 }
 
 #[tauri::command]
-fn load_encode_option(app_handle: tauri::AppHandle) -> EncodeOption {
-    let store = StoreBuilder::new(app_handle.clone(), ".settings.json".into()).build();
+fn load_encode_option(
+    stores: State<'_, StoreCollection<Wry>>,
+    app_handle: tauri::AppHandle,
+) -> EncodeOption {
+    let path = PathBuf::from(STORE_PATH);
 
-    let quality: f32 = store
-        .get("quality")
-        .map(|v| v.as_f64().unwrap_or(75.0) as f32)
-        .unwrap_or(75.0);
-    let lossless: bool = store
-        .get("lossless")
-        .map(|v| v.as_bool().unwrap_or(false))
-        .unwrap_or(false);
+    let quality = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
+        Ok(store
+            .get("quality")
+            .map(|v| v.as_f64().unwrap_or(75.0) as f32)
+            .unwrap_or(75.0))
+    })
+    .unwrap_or_else(|_| {
+        return 75.0;
+    });
+
+    let lossless = with_store(app_handle.clone(), stores, path.clone(), |store| {
+        Ok(store
+            .get("lossless")
+            .map(|v| v.as_bool().unwrap_or(false))
+            .unwrap_or(false))
+    }).unwrap_or_else(|_| {
+        return false;
+    });
 
     return EncodeOption { quality, lossless };
 }
 
 #[tauri::command]
-fn save_encode_option(encode_option: EncodeOption, app_handle: tauri::AppHandle) {
-    let mut store = StoreBuilder::new(app_handle.clone(), ".settings.json".into()).build();
+fn save_encode_option(
+    encode_option: EncodeOption,
+    stores: State<'_, StoreCollection<Wry>>,
+    app_handle: tauri::AppHandle,
+) -> Result<(), tauri_plugin_store::Error> {
+    let path = PathBuf::from(STORE_PATH);
 
-    if let Err(e) = store.insert("quality".to_string(), json!(encode_option.quality)) {
-        eprintln!("Failed to insert into store: {}", e);
-    }
+    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
+        store.insert("quality".into(), json!(encode_option.quality))
+    })?;
 
-    if let Err(e) = store.insert("lossless".to_string(), json!(encode_option.lossless)) {
-        eprintln!("Failed to insert into store: {}", e);
-    }
+    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
+        store.insert("lossless".into(), json!(encode_option.lossless))
+    })?;
+
+    Ok(())
 }
 
 #[tauri::command]
-async fn convert_webp(image_input_info: ImageInputInfo, app_handle: tauri::AppHandle) -> ImageInfo {
-    let store = StoreBuilder::new(app_handle.clone(), ".settings.json".into()).build();
-
-    let quality: f32 = store
-        .get("quality")
-        .map(|v| v.as_f64().unwrap_or(75.0) as f32)
-        .unwrap_or(75.0);
-    let lossless: bool = store
-        .get("lossless")
-        .map(|v| v.as_bool().unwrap_or(false))
-        .unwrap_or(false);
+async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOption) -> ImageInfo {
+    let quality = encode_option.quality;
+    let lossless = encode_option.lossless;
 
     let input_path = image_input_info.input_path;
     let output_path = image_input_info.output_path;
@@ -126,8 +139,16 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            let path = PathBuf::from(".settings.json");
-            let mut _store = StoreBuilder::new(app.handle(), path).build();
+            let path = PathBuf::from(STORE_PATH);
+            let stores = app.state::<StoreCollection<Wry>>();
+
+            with_store(app.handle(), stores, path, |store| {
+                Ok(store
+                    .get("quality")
+                    .map(|v| v.as_f64().unwrap_or(75.0) as f32)
+                    .unwrap_or(75.0))
+            })?;
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

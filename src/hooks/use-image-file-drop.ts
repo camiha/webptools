@@ -43,7 +43,6 @@ export const useImageFileDrop = () => {
 				const imageInputInfo = {
 					input_path: inputPath,
 					output_path: outputPath,
-					...encodeOption,
 				};
 
 				if (!isSupportExtension(inputPath)) {
@@ -77,7 +76,7 @@ export const useImageFileDrop = () => {
 					input_size: number;
 					output_size: number;
 					message: string;
-				}>("convert_webp", { imageInputInfo }).then(
+				}>("convert_webp", { imageInputInfo, encodeOption }).then(
 					({ input_size, output_size, message }) => {
 						const rate = Math.round(
 							(100 * (input_size - output_size)) / input_size,

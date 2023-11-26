@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 
 import { EncodeOptionContext, SetEncodeOptionContext } from "./contexts";
 import { loadConfig } from "../store";
+import { EncodeOption } from "../types";
 
 export const EncodeOptionProvider = ({
 	children,
 }: { children: React.ReactNode }) => {
-	const [encodeOption, setEncodeOption] = useState({
-		lossless: false,
-		quality: 75,
-	});
+	const [encodeOption, setEncodeOption] = useState<EncodeOption | null>(null);
 
 	useEffect(() => {
 		const load = async () => {

@@ -5,7 +5,7 @@ import { saveConfig } from "../store";
 export const useEncodeOptionSave = ({
 	setEncodeOption,
 }: {
-	setEncodeOption: (value: SetStateAction<EncodeOption>) => void;
+	setEncodeOption: (value: SetStateAction<EncodeOption | null>) => void;
 }) => {
 	const saveEncodeOption = (encodeOption: EncodeOption) => {
 		setEncodeOption(encodeOption);

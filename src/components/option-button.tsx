@@ -28,7 +28,7 @@ import { useEncodeOptionSave } from "../hooks/use-encode-option";
 
 export const OptionButton = () => {
 	const useEncodeOption = () => useContext(EncodeOptionContext);
-	const { quality } = useEncodeOption();
+	const encodeOption = useEncodeOption();
 
 	const useSetEncodeOption = () => useContext(SetEncodeOptionContext);
 	const setEncodeOption = useSetEncodeOption();
@@ -60,18 +60,24 @@ export const OptionButton = () => {
 					<ModalCloseButton />
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<ModalBody>
-							<FormControl>
-								<FormLabel>quality</FormLabel>
-								<NumberInput defaultValue={quality} min={0} max={100}>
-									<NumberInputField
-										{...register("quality", { required: true })}
-									/>
-									<NumberInputStepper>
-										<NumberIncrementStepper />
-										<NumberDecrementStepper />
-									</NumberInputStepper>
-								</NumberInput>
-							</FormControl>
+							{encodeOption !== null && (
+								<FormControl>
+									<FormLabel>quality</FormLabel>
+									<NumberInput
+										defaultValue={encodeOption.quality}
+										min={0}
+										max={100}
+									>
+										<NumberInputField
+											{...register("quality", { required: true })}
+										/>
+										<NumberInputStepper>
+											<NumberIncrementStepper />
+											<NumberDecrementStepper />
+										</NumberInputStepper>
+									</NumberInput>
+								</FormControl>
+							)}
 						</ModalBody>
 						<ModalFooter>
 							<Button type="submit" colorScheme="blue" mr={3}>
