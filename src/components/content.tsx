@@ -13,13 +13,13 @@ const ContentItem = ({ image }: { image: ImageItem }) => {
 						alignItems={"center"}
 					>
 						{image.isProgress ? (
-							<Spinner size="xs" />
+							<Spinner size="xs" aria-label="converting" />
 						) : image.isFailed === true ? (
-							<Box color="red.500">
+							<Box color="red.500" aria-label="failed" role="img">
 								<X size={12} />
 							</Box>
 						) : (
-							<Box color="green.500">
+							<Box color="green.500" aria-label="completed" role="img">
 								<Check size={12} />
 							</Box>
 						)}
@@ -49,7 +49,12 @@ export const Content = ({ images }: { images: Image }) => {
 				<Text>filename</Text>
 				<Text>reduced rate</Text>
 			</Flex>
-			<List.Root display="flex" flexDirection="column" gap={1}>
+			<List.Root
+				display="flex"
+				flexDirection="column"
+				gap={1}
+				aria-live="polite"
+			>
 				{Object.entries(images).map(([key, image]) => (
 					<ContentItem key={key} image={image} />
 				))}

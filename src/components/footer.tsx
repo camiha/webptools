@@ -9,7 +9,7 @@ export const Footer = ({
 	onClickChooseFile: () => void;
 }) => {
 	return (
-		<Flex flexDirection={"column"} gap={2}>
+		<Flex as="footer" flexDirection={"column"} gap={2}>
 			<Flex alignItems={"center"} justifyContent={"center"} gap={2}>
 				<Button onClick={onClickChooseFile} flexGrow={1}>
 					Choose file

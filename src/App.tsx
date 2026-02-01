@@ -15,9 +15,11 @@ function App() {
 			justifyContent={"space-between"}
 			height={"100dvh"}
 		>
-			<Flex flexDirection={"column"} gap={2}>
+			<Flex as="header" flexDirection={"column"} gap={2}>
 				<Header />
 				<Separator />
+			</Flex>
+			<Flex as="main" flexDirection={"column"} gap={2} flexGrow={1} overflow={"auto"}>
 				<Content images={images} />
 			</Flex>
 			<Footer onClickReset={clearImages} onClickChooseFile={openFilePicker} />

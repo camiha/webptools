@@ -49,7 +49,12 @@ export const OptionButton = () => {
 
 	return (
 		<>
-			<Button variant="outline" onClick={() => setOpen(true)} flexGrow={1}>
+			<Button
+				variant="outline"
+				onClick={() => setOpen(true)}
+				flexGrow={1}
+				aria-haspopup="dialog"
+			>
 				options
 			</Button>
 			<Dialog.Root
@@ -65,7 +70,7 @@ export const OptionButton = () => {
 						<Dialog.Header>
 							<Dialog.Title>encode options</Dialog.Title>
 						</Dialog.Header>
-						<Dialog.CloseTrigger />
+						<Dialog.CloseTrigger aria-label="close without saving" />
 						<form onSubmit={handleSubmit(onSubmit)}>
 							<Dialog.Body>
 								{encodeOption !== null && (
@@ -108,7 +113,7 @@ export const OptionButton = () => {
 							<Dialog.Footer>
 								<Button type="submit">save</Button>
 								<Button variant="outline" onClick={handleModalClose}>
-									close
+									close without saving
 								</Button>
 							</Dialog.Footer>
 						</form>
