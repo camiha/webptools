@@ -1,10 +1,5 @@
-import { extendTheme, type ThemeConfig } from "@chakra-ui/react";
+import { createSystem, defaultConfig, defineConfig } from "@chakra-ui/react";
 
-const config: ThemeConfig = {
-	initialColorMode: "system",
-	useSystemColorMode: true,
-};
+const config = defineConfig({});
 
-const theme = extendTheme({ config });
-
-export default theme;
+export const system = createSystem(defaultConfig, config);

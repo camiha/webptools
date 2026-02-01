@@ -1,6 +1,6 @@
-import { SetStateAction } from "react";
-import { EncodeOption } from "../types";
+import type { SetStateAction } from "react";
 import { saveConfig } from "../store";
+import type { EncodeOption } from "../types";
 
 export const useEncodeOptionSave = ({
 	setEncodeOption,

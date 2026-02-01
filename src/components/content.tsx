@@ -1,42 +1,44 @@
-import { Flex, Text, List, ListItem, Spinner } from "@chakra-ui/react";
-import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { Box, Flex, List, Spinner, Text } from "@chakra-ui/react";
+import { Check, X } from "lucide-react";
 import type { Image, ImageItem } from "../hooks/use-image-file-drop";
 
 const ContentItem = ({ image }: { image: ImageItem }) => {
 	return (
-		<ListItem display={"flex"} gap={2} flexDirection={"column"}>
+		<List.Item display={"flex"} gap={2} flexDirection={"column"}>
 			<Flex gap={2} justifyContent={"space-between"}>
 				<Flex gap={2}>
-					<>
-						<Flex
-							flexDirection={"column"}
-							justifyContent={"center"}
-							alignItems={"center"}
-						>
-							{image.isProgress ? (
-								<Spinner size="xs" />
-							) : image.isFailed === true ? (
-								<CloseIcon fontSize={"xs"} color={"red.500"} />
-							) : (
-								<CheckIcon fontSize={"xs"} color={"green.500"} />
-							)}
-						</Flex>
+					<Flex
+						flexDirection={"column"}
+						justifyContent={"center"}
+						alignItems={"center"}
+					>
 						{image.isProgress ? (
-							<Text fontSize={"xs"}>{image.fileName}</Text>
+							<Spinner size="xs" />
 						) : image.isFailed === true ? (
-							<Text fontSize={"xs"}>
-								{image.fileName} ({image.message})
-							</Text>
+							<Box color="red.500">
+								<X size={12} />
+							</Box>
 						) : (
-							<Text fontSize={"xs"}>{image.fileName}</Text>
+							<Box color="green.500">
+								<Check size={12} />
+							</Box>
 						)}
-					</>
+					</Flex>
+					{image.isProgress ? (
+						<Text fontSize={"xs"}>{image.fileName}</Text>
+					) : image.isFailed === true ? (
+						<Text fontSize={"xs"}>
+							{image.fileName} ({image.message})
+						</Text>
+					) : (
+						<Text fontSize={"xs"}>{image.fileName}</Text>
+					)}
 				</Flex>
 				<Text fontSize={"xs"}>
 					{image.reductionRate === 0 ? "-" : image.reductionRate}%
 				</Text>
 			</Flex>
-		</ListItem>
+		</List.Item>
 	);
 };
 
@@ -47,11 +49,11 @@ export const Content = ({ images }: { images: Image }) => {
 				<Text>filename</Text>
 				<Text>reduced rate</Text>
 			</Flex>
-			<List display="flex" flexDirection="column" gap={1}>
+			<List.Root display="flex" flexDirection="column" gap={1}>
 				{Object.entries(images).map(([key, image]) => (
 					<ContentItem key={key} image={image} />
 				))}
-			</List>
+			</List.Root>
 		</Flex>
 	);
 };

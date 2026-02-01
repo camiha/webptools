@@ -1,32 +1,19 @@
 import {
-	Modal,
-	ModalOverlay,
-	ModalContent,
-	ModalHeader,
-	ModalFooter,
-	ModalBody,
-	ModalCloseButton,
 	Button,
 	Checkbox,
-	useDisclosure,
-	FormControl,
-	FormLabel,
+	Dialog,
+	Field,
 	NumberInput,
-	NumberInputField,
-	NumberInputStepper,
-	NumberIncrementStepper,
-	NumberDecrementStepper,
 	VStack,
 } from "@chakra-ui/react";
-
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useContext, useState } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { useEncodeOptionSave } from "../hooks/use-encode-option";
 import {
 	EncodeOptionContext,
 	SetEncodeOptionContext,
 } from "../providers/contexts";
-import { useContext } from "react";
-import { EncodeOption } from "../types";
-import { useEncodeOptionSave } from "../hooks/use-encode-option";
+import type { EncodeOption } from "../types";
 
 export const OptionButton = () => {
 	const useEncodeOption = () => useContext(EncodeOptionContext);
@@ -38,7 +25,7 @@ export const OptionButton = () => {
 		setEncodeOption,
 	});
 
-	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [open, setOpen] = useState(false);
 	const { register, handleSubmit, setValue } = useForm<EncodeOption>();
 
 	const onSubmit: SubmitHandler<EncodeOption> = (data) => {
@@ -48,70 +35,86 @@ export const OptionButton = () => {
 			lossless: data.lossless,
 			delete_original: data.delete_original,
 		});
-		onClose();
+		setOpen(false);
 	};
 
 	const handleModalClose = () => {
 		if (encodeOption !== null) {
 			setValue("quality", encodeOption.quality);
 			setValue("lossless", encodeOption.lossless);
+			setValue("delete_original", encodeOption.delete_original);
 		}
-		onClose();
+		setOpen(false);
 	};
 
 	return (
 		<>
-			<Button width={"full"} onClick={onOpen}>
+			<Button onClick={() => setOpen(true)} flexGrow={1}>
 				options
 			</Button>
-			<Modal isOpen={isOpen} onClose={handleModalClose} isCentered>
-				<ModalOverlay />
-				<ModalContent maxWidth={320}>
-					<ModalHeader>encode options</ModalHeader>
-					<ModalCloseButton />
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<ModalBody>
-							{encodeOption !== null && (
-								<VStack spacing={4}>
-									<FormControl>
-										<FormLabel>quality</FormLabel>
-										<NumberInput
-											defaultValue={encodeOption.quality}
-											min={0}
-											max={100}
-										>
-											<NumberInputField
-												{...register("quality", { required: true })}
-											/>
-											<NumberInputStepper>
-												<NumberIncrementStepper />
-												<NumberDecrementStepper />
-											</NumberInputStepper>
-										</NumberInput>
-									</FormControl>
-									<FormControl>
-										<FormLabel>others</FormLabel>
-										<Checkbox {...register("lossless")}>
-											using lossless option
-										</Checkbox>
-										<Checkbox {...register("delete_original")}>
-											delete original file
-										</Checkbox>
-									</FormControl>
-								</VStack>
-							)}
-						</ModalBody>
-						<ModalFooter>
-							<Button type="submit" colorScheme="blue" mr={3}>
-								save
-							</Button>
-							<Button variant="ghost" onClick={handleModalClose}>
-								close
-							</Button>
-						</ModalFooter>
-					</form>
-				</ModalContent>
-			</Modal>
+			<Dialog.Root
+				open={open}
+				onOpenChange={(e) => {
+					if (!e.open) handleModalClose();
+				}}
+				placement="center"
+			>
+				<Dialog.Backdrop />
+				<Dialog.Positioner>
+					<Dialog.Content maxWidth={320}>
+						<Dialog.Header>
+							<Dialog.Title>encode options</Dialog.Title>
+						</Dialog.Header>
+						<Dialog.CloseTrigger />
+						<form onSubmit={handleSubmit(onSubmit)}>
+							<Dialog.Body>
+								{encodeOption !== null && (
+									<VStack gap={4}>
+										<Field.Root>
+											<Field.Label>quality</Field.Label>
+											<NumberInput.Root
+												defaultValue={String(encodeOption.quality)}
+												min={0}
+												max={100}
+											>
+												<NumberInput.Input
+													{...register("quality", { required: true })}
+												/>
+												<NumberInput.Control>
+													<NumberInput.IncrementTrigger />
+													<NumberInput.DecrementTrigger />
+												</NumberInput.Control>
+											</NumberInput.Root>
+										</Field.Root>
+										<Field.Root>
+											<Checkbox.Root>
+												<Checkbox.HiddenInput {...register("lossless")} />
+												<Checkbox.Control />
+												<Checkbox.Label>using lossless option</Checkbox.Label>
+											</Checkbox.Root>
+										</Field.Root>
+										<Field.Root>
+											<Checkbox.Root>
+												<Checkbox.HiddenInput
+													{...register("delete_original")}
+												/>
+												<Checkbox.Control />
+												<Checkbox.Label>delete original file</Checkbox.Label>
+											</Checkbox.Root>
+										</Field.Root>
+									</VStack>
+								)}
+							</Dialog.Body>
+							<Dialog.Footer>
+								<Button type="submit">save</Button>
+								<Button variant="outline" onClick={handleModalClose}>
+									close
+								</Button>
+							</Dialog.Footer>
+						</form>
+					</Dialog.Content>
+				</Dialog.Positioner>
+			</Dialog.Root>
 		</>
 	);
 };

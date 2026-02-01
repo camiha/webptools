@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, createContext } from "react";
-import { EncodeOption } from "../types";
+import { createContext, type Dispatch, type SetStateAction } from "react";
+import type { EncodeOption } from "../types";
 
 export const EncodeOptionContext = createContext<EncodeOption | null>(null);
 
