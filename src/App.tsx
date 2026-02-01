@@ -5,7 +5,7 @@ import { Header } from "./components/header";
 import { useImageFileDrop } from "./hooks/use-image-file-drop";
 
 function App() {
-	const { images, clearImages } = useImageFileDrop();
+	const { images, clearImages, openFilePicker } = useImageFileDrop();
 
 	return (
 		<Flex
@@ -20,7 +20,7 @@ function App() {
 				<Separator />
 				<Content images={images} />
 			</Flex>
-			<Footer onClickReset={clearImages} />
+			<Footer onClickReset={clearImages} onClickChooseFile={openFilePicker} />
 		</Flex>
 	);
 }

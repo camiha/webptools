@@ -4,7 +4,7 @@
 use image;
 use serde_json::json;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tauri_plugin_store::StoreExt;
 use webp;
 use webp::Encoder;
@@ -142,14 +142,49 @@ async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOpt
     }
 }
 
+const SUPPORTED_EXTENSIONS: &[&str] = &["png", "jpg", "jpeg"];
+
+fn collect_image_files(dir: &Path, result: &mut Vec<String>) {
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                collect_image_files(&path, result);
+            } else if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                if SUPPORTED_EXTENSIONS.contains(&ext.to_lowercase().as_str()) {
+                    if let Some(s) = path.to_str() {
+                        result.push(s.to_string());
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[tauri::command]
+fn expand_paths(paths: Vec<String>) -> Vec<String> {
+    let mut result = Vec::new();
+    for p in &paths {
+        let path = Path::new(p);
+        if path.is_dir() {
+            collect_image_files(path, &mut result);
+        } else {
+            result.push(p.clone());
+        }
+    }
+    result
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             convert_webp,
             load_encode_option,
-            save_encode_option
+            save_encode_option,
+            expand_paths
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

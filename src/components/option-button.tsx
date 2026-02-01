@@ -49,7 +49,7 @@ export const OptionButton = () => {
 
 	return (
 		<>
-			<Button onClick={() => setOpen(true)} flexGrow={1}>
+			<Button variant="outline" onClick={() => setOpen(true)} flexGrow={1}>
 				options
 			</Button>
 			<Dialog.Root
