@@ -1,14 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-
 use image;
 use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
-use tauri::{State, Wry};
-use tauri_plugin_store::{with_store, StoreCollection};
+use tauri_plugin_store::StoreExt;
 use webp;
 use webp::Encoder;
 
@@ -41,77 +38,45 @@ struct ImageInfo {
 }
 
 #[tauri::command]
-fn load_encode_option(
-    stores: State<'_, StoreCollection<Wry>>,
-    app_handle: tauri::AppHandle,
-) -> EncodeOption {
-    let path = PathBuf::from(STORE_PATH);
+fn load_encode_option(app_handle: tauri::AppHandle) -> EncodeOption {
+    let store = app_handle.store(PathBuf::from(STORE_PATH)).unwrap();
 
-    let quality = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        Ok(store
-            .get("quality")
-            .map(|v| {
-                v.as_f64()
-                    .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.quality.into()) as f32
-            })
-            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.quality))
-    })
-    .unwrap_or_else(|_| {
-        return DEFAULT_WEBP_ENCODE_OPTION.quality;
-    });
+    let quality = store
+        .get("quality")
+        .and_then(|v| v.as_f64())
+        .map(|v| v as f32)
+        .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.quality);
 
-    let lossless = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        Ok(store
-            .get("lossless")
-            .map(|v| v.as_bool().unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless))
-            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless))
-    })
-    .unwrap_or_else(|_| {
-        return DEFAULT_WEBP_ENCODE_OPTION.lossless;
-    });
+    let lossless = store
+        .get("lossless")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.lossless);
 
-    let delete_original = with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        Ok(store
-            .get("delete_original")
-            .map(|v| {
-                v.as_bool()
-                    .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.delete_original)
-            })
-            .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.delete_original))
-    })
-    .unwrap_or_else(|_| {
-        return DEFAULT_WEBP_ENCODE_OPTION.delete_original;
-    });
+    let delete_original = store
+        .get("delete_original")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(DEFAULT_WEBP_ENCODE_OPTION.delete_original);
 
-    return EncodeOption {
+    EncodeOption {
         quality,
         lossless,
         delete_original,
-    };
+    }
 }
 
 #[tauri::command]
 fn save_encode_option(
     encode_option: EncodeOption,
-    stores: State<'_, StoreCollection<Wry>>,
     app_handle: tauri::AppHandle,
-) -> Result<(), tauri_plugin_store::Error> {
-    let path = PathBuf::from(STORE_PATH);
+) -> Result<(), String> {
+    let store = app_handle
+        .store(PathBuf::from(STORE_PATH))
+        .map_err(|e| e.to_string())?;
 
-    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        store.insert("quality".into(), json!(encode_option.quality))
-    })?;
-
-    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        store.insert("lossless".into(), json!(encode_option.lossless))
-    })?;
-
-    with_store(app_handle.clone(), stores.clone(), path.clone(), |store| {
-        store.insert(
-            "delete_original".into(),
-            json!(encode_option.delete_original),
-        )
-    })?;
+    store.set("quality", json!(encode_option.quality));
+    store.set("lossless", json!(encode_option.lossless));
+    store.set("delete_original", json!(encode_option.delete_original));
+    store.save().map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -179,7 +144,8 @@ async fn convert_webp(image_input_info: ImageInputInfo, encode_option: EncodeOpt
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             convert_webp,
             load_encode_option,

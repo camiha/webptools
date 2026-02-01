@@ -1,5 +1,5 @@
 import { EncodeOption } from "../types";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 export const saveConfig = async (encodeOption: EncodeOption) => {
 	await invoke("save_encode_option", { encodeOption });

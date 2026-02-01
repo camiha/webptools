@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { EncodeOptionContext } from "../providers/contexts";
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { isSupportExtension, replaceExtension } from "../utils";
 
 export type ImageItem = {
@@ -34,8 +34,8 @@ export const useImageFileDrop = () => {
 	}, []);
 
 	useEffect(() => {
-		const unlisten = listen<string[]>("tauri://file-drop", (event) => {
-			for (const inputPath of event.payload) {
+		const unlisten = listen<{ paths: string[] }>("tauri://drag-drop", (event) => {
+			for (const inputPath of event.payload.paths) {
 				if (images[inputPath]) continue;
 
 				const fileName = inputPath.split("/").slice(-1)[0];
