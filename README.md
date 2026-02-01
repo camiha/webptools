@@ -1,6 +1,6 @@
 # webptools
 minimal webp converter.
-![screenshot](https://github.com/camiha/webptools/assets/65489256/ca0daff5-11ed-4029-b62f-1565da03f93c)
+![screenshot](./screenshot.webp)
 
 ## Feature
 - convert png/jpg to webp.
