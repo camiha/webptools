@@ -11,7 +11,6 @@ minimal webp converter.
 - toggle dark/light mode theme.
 
 ## Releases
-note: code certificate not yet set.
 [releases](https://github.com/camiha/webptools/releases)
 
 ## Self build
